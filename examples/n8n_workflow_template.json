@@ -1,0 +1,91 @@
+{
+  "name": "Template OpenVoice BR Engine - Síntese de Voz",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "1",
+      "name": "Quando Clicado",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "texto_para_fala",
+              "value": "Olá! Esta é uma notificação em áudio processada automaticamente pelo n8n utilizando o OpenVoice BR Engine."
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "2",
+      "name": "Definir Texto",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.2,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://multivozes_br_engine:5050/v1/audio/speech",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"tts-1\",\n  \"input\": \"{{ $json.texto_para_fala }}\",\n  \"voice\": \"alloy\",\n  \"response_format\": \"mp3\",\n  \"speed\": 1.0,\n  \"engine\": \"auto\"\n}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          },
+          "timeout": 120000
+        }
+      },
+      "id": "3",
+      "name": "Gerar Áudio (OpenVoice HTTP)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [700, 300]
+    }
+  ],
+  "connections": {
+    "Quando Clicado": {
+      "main": [
+        [
+          {
+            "node": "Definir Texto",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Definir Texto": {
+      "main": [
+        [
+          {
+            "node": "Gerar Áudio (OpenVoice HTTP)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  }
+}
+

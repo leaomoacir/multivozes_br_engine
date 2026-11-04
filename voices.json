@@ -11,5 +11,9 @@
   "nova": "de-DE-SeraphinaMultilingualNeural",
   "sage": "fr-FR-VivienneMultilingualNeural",
   "shimmer": "en-US-EmmaMultilingualNeural",
-  "verse": "ko-KR-HyunsuMultilingualNeural"
+  "verse": "ko-KR-HyunsuMultilingualNeural",
+  "thalita": "pt-BR-ThalitaMultilingualNeural",
+  "antonio": "pt-BR-AntonioNeural",
+  "francisca": "pt-BR-FranciscaNeural",
+  "gtts": "pt-BR-ThalitaMultilingualNeural"
 }
