@@ -9,13 +9,14 @@
 <p align="center">
   <img src="https://img.shields.io/badge/Python-3.10%20%7C%203.11%20%7C%203.12%20%7C%203.13-blue?logo=python" alt="Python Version"/>
   <img src="https://img.shields.io/badge/Docker-Ready-2496ED?logo=docker" alt="Docker Ready"/>
+  <img src="https://img.shields.io/badge/Portainer-Stack%20Ready-0db7ed?logo=portainer" alt="Portainer Stack Ready"/>
   <img src="https://img.shields.io/badge/API-OpenAI%20Compatible-green" alt="OpenAI Compatible"/>
   <img src="https://img.shields.io/badge/n8n-Ready-EA4B71?logo=n8n" alt="n8n Ready"/>
   <img src="https://img.shields.io/badge/License-MIT-yellow" alt="License MIT"/>
 </p>
 
 <p align="center">
-  <b><a href="#-português">🇧🇷 Português</a></b> · <b><a href="#-english">🇺🇸 English</a></b> · <b><a href="#-exemplos-de-uso--examples">💡 Exemplos</a></b> · <b><a href="VOICES.md">🎙️ Catálogo de Vozes</a></b>
+  <b><a href="#-português">🇧🇷 Português</a></b> · <b><a href="#-english">🇺🇸 English</a></b> · <b><a href="#-stack-oficial-para-portainer">🚢 Stack Portainer</a></b> · <b><a href="#-exemplos-de-uso--examples">💡 Exemplos</a></b> · <b><a href="VOICES.md">🎙️ Catálogo de Vozes</a></b>
 </p>
 
 ---
@@ -30,38 +31,47 @@ O **OpenVoice BR Engine** transforma texto em áudio de alta qualidade (**MP3, W
 - **Modo 100% HTTP:** Configure `TTS_ENGINE=gtts` no `.env` para rodar exclusivamente via requisições HTTP normais em servidores de data center.
 - **Ajuste Fino de Velocidade e Formatos com FFmpeg:** Suporta velocidades fracionadas de `0.25x` a `2.0x` (com filtro `atempo`) e conversão para MP3, WAV, Opus, AAC, FLAC e PCM.
 - **Desacoplamento de Redes no Docker:** Comunicação simplificada entre contêineres vizinhos na rede bridge `openvoice_net`.
+- **Publicação Automática de Imagens (CI/CD):** Pipeline GitHub Actions configurado para construir imagens multi-arch (`linux/amd64` e `linux/arm64`) e publicar no GitHub Container Registry (GHCR).
 
 ---
 
-## ⚡ Início Rápido com Docker (Recomendado)
+## 🚢 Stack Oficial para Portainer
 
-O modo mais simples e isolado de rodar em qualquer máquina (Windows, Linux, macOS ou VPS):
+A maneira mais rápida de rodar em um servidor com **Portainer**:
 
-1. **Clone o repositório:**
-   ```bash
-   git clone https://github.com/samucamg/multivozes_br_engine.git
-   cd multivozes_br_engine
-   ```
+1. No seu Portainer, acesse **Stacks** → **Add stack**.
+2. Dê um nome à stack (ex: `openvoice-br`).
+3. No **Web editor**, cole o conteúdo de **[portainer-stack.yml](portainer-stack.yml)**.
+4. Clique em **Deploy the stack**.
 
-2. **Crie o arquivo de configuração `.env`:**
-   ```bash
-   # Windows (PowerShell)
-   Copy-Item .env.example .env
+Pronto! O Portainer baixará a imagem oficial do GitHub Packages (`ghcr.io/leaomoacir/multivozes_br_engine:latest`) e iniciará o serviço na porta `5050`.
 
-   # Linux / macOS
-   cp .env.example .env
-   ```
+---
 
-3. **Suba o contêiner:**
-   ```bash
-   docker compose up -d --build
-   ```
+## ⚡ Início Rápido com Docker
 
-Pronto! O serviço estará respondendo em `http://localhost:5050` (ou no IP do seu servidor).
-
-Para conferir os logs:
+### Opção A: Docker Run em 1 Linha
 ```bash
-docker logs -f openvoice_br_engine
+docker run -d \
+  --name openvoice_br_engine \
+  --restart unless-stopped \
+  -p 5050:5050 \
+  -e TTS_ENGINE=auto \
+  -e REQUIRE_API_KEY=false \
+  ghcr.io/leaomoacir/multivozes_br_engine:latest
+```
+
+### Opção B: Docker Compose
+```bash
+# 1. Clone o repositório
+git clone https://github.com/leaomoacir/multivozes_br_engine.git
+cd multivozes_br_engine
+
+# 2. Crie o arquivo .env
+cp .env.example .env
+
+# 3. Suba o contêiner
+docker compose up -d
 ```
 
 ---
@@ -70,39 +80,27 @@ docker logs -f openvoice_br_engine
 
 Requisitos: **Python 3.10 a 3.13** e **FFmpeg** instalado no sistema.
 
-1. **Clone e entre na pasta:**
-   ```bash
-   git clone https://github.com/samucamg/multivozes_br_engine.git
-   cd multivozes_br_engine
-   ```
+```bash
+git clone https://github.com/leaomoacir/multivozes_br_engine.git
+cd multivozes_br_engine
 
-2. **Crie e ative o ambiente virtual:**
-   ```bash
-   python -m venv .venv
+python -m venv .venv
 
-   # Windows (PowerShell)
-   .\.venv\Scripts\Activate.ps1
+# Windows (PowerShell)
+.\.venv\Scripts\Activate.ps1
+# Linux / macOS
+source .venv/bin/activate
 
-   # Linux / macOS
-   source .venv/bin/activate
-   ```
-
-3. **Instale as dependências:**
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-4. **Copie o `.env` e inicie o servidor:**
-   ```bash
-   # Windows: Copy-Item .env.example .env | Linux: cp .env.example .env
-   python main.py
-   ```
+pip install -r requirements.txt
+cp .env.example .env
+python main.py
+```
 
 ---
 
 ## 🤖 Integração com n8n
 
-O OpenVoice BR Engine é 100% compatível com o n8n. Você pode usá-lo de duas formas:
+O OpenVoice BR Engine é 100% compatível com o n8n:
 
 ### 1. Nó Oficial da OpenAI (Geração de Áudio)
 - **Credencial OpenAI:**
@@ -136,8 +134,6 @@ O OpenVoice BR Engine é 100% compatível com o n8n. Você pode usá-lo de duas 
 
 ## ⚙️ Motores de Síntese (`engine`)
 
-Você pode escolher o motor na variável `TTS_ENGINE` do `.env` ou enviar dinamicamente no JSON da requisição:
-
 | Valor | Comportamento | Quando Usar |
 | --- | --- | --- |
 | `"auto"` *(Padrão)* | Tenta o **Edge-TTS neural**. Se falhar (erro 403, timeout ou handshake), aciona automaticamente o **Google TTS**. | Recomendado para a maioria dos casos. Garante máxima qualidade e nunca deixa seu fluxo na mão. |
@@ -147,8 +143,6 @@ Você pode escolher o motor na variável `TTS_ENGINE` do `.env` ou enviar dinami
 ---
 
 ## 🎙️ Vozes Disponíveis
-
-O sistema suporta apelidos amigáveis, compatibilidade total com os 13 aliases da OpenAI e o catálogo neural completo:
 
 - **Principais vozes brasileiras:**
   - `alloy` ou `thalita`: `pt-BR-ThalitaMultilingualNeural` (Feminina, expressiva, padrão do projeto)
@@ -172,34 +166,45 @@ O sistema suporta apelidos amigáveis, compatibilidade total com os 13 aliases d
 - **Datacenter Anti-Block (Solves Error 403 / Handshake Issues):** If hosted on cloud VPS providers (such as Hetzner, OVH, or AWS) where Microsoft blocks datacenter WebSocket IPs, the engine **automatically falls back to Google TTS via standard HTTP**, guaranteeing a `200 OK` response.
 - **Pure HTTP Mode:** Set `TTS_ENGINE=gtts` to bypass WebSockets entirely.
 - **FFmpeg Speed & Pitch Adjustments:** Accurate speed adjustments (`0.25x` to `2.0x`) using the FFmpeg `atempo` filter.
-- **Ready for n8n & Docker:** Pre-configured Docker Compose with internal network bridging for seamless automation workflows.
+- **Portainer Stack & Docker CI/CD:** Complete Portainer stack template and GitHub Actions workflow for automatic multi-arch builds (`linux/amd64` and `linux/arm64`).
+
+---
+
+## 🚢 Official Portainer Stack
+
+Deploy in 1-click in Portainer:
+1. Open **Stacks** → **Add stack**.
+2. Name it `openvoice-br`.
+3. In the **Web editor**, paste the contents of **[portainer-stack.yml](portainer-stack.yml)**.
+4. Click **Deploy the stack**.
 
 ---
 
 ## ⚡ Quick Start with Docker
 
-1. **Clone the repository:**
-   ```bash
-   git clone https://github.com/samucamg/multivozes_br_engine.git
-   cd multivozes_br_engine
-   ```
+### Option A: One-Liner
+```bash
+docker run -d \
+  --name openvoice_br_engine \
+  --restart unless-stopped \
+  -p 5050:5050 \
+  -e TTS_ENGINE=auto \
+  -e REQUIRE_API_KEY=false \
+  ghcr.io/leaomoacir/multivozes_br_engine:latest
+```
 
-2. **Configure environment:**
-   ```bash
-   cp .env.example .env
-   ```
-
-3. **Start with Docker Compose:**
-   ```bash
-   docker compose up -d --build
-   ```
-   The service will be listening on `http://localhost:5050`.
+### Option B: Docker Compose
+```bash
+git clone https://github.com/leaomoacir/multivozes_br_engine.git
+cd multivozes_br_engine
+cp .env.example .env
+docker compose up -d
+```
 
 ---
 
 ## 🛠️ API Reference (`POST /v1/audio/speech`)
 
-### Request Payload:
 ```json
 {
   "model": "tts-1",

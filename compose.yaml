@@ -1,6 +1,7 @@
 services:
   openvoice:
     build: .
+    image: ${DOCKER_IMAGE:-ghcr.io/leaomoacir/multivozes_br_engine:latest}
     container_name: openvoice_br_engine
     restart: unless-stopped
     env_file: ${ENV_FILE:-.env}

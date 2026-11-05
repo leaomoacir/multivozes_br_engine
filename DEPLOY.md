@@ -1,71 +1,93 @@
-# Guia de Deploy (Auto-Hospedado, VPS Hetzner e Cloudflare Tunnel)
+# Guia de Deploy (Auto-Hospedado, Portainer, VPS Hetzner e CI/CD)
 
-O **OpenVoice BR Engine** é auto-hospedado, leve e não requer serviços em nuvem pagos. Ele pode ser executado em uma VPS própria (Hetzner, OVH, DigitalOcean, etc.), em casa via Cloudflare Tunnel ou em sua máquina de desenvolvimento.
-
----
-
-## 1. Deploy em VPS (Ubuntu / Debian com Docker & Portainer)
-
-Este é o cenário padrão para uso conjunto com o **n8n**.
-
-### Passo a Passo no Servidor:
-1. Conecte-se via SSH ao seu servidor VPS.
-2. Clone o repositório:
-   ```bash
-   git clone https://github.com/samucamg/multivozes_br_engine.git /opt/openvoice_br_engine
-   cd /opt/openvoice_br_engine
-   ```
-3. Copie o arquivo de variáveis de ambiente:
-   ```bash
-   cp .env.example .env
-   ```
-4. Edite o `.env`:
-   ```bash
-   nano .env
-   ```
-   **Dicas cruciais para VPS Hetzner / Data Centers:**
-   - **`TTS_ENGINE=auto`**: Tenta o Edge-TTS e faz fallback automático para o Google TTS em caso de erro 403.
-   - **`TTS_ENGINE=gtts`**: Se a Hetzner estiver com o IP 100% bloqueado para conexões WebSocket na Microsoft, configure `TTS_ENGINE=gtts` para usar direto as rotas HTTP normais do Google.
-   - **`BIND_ADDRESS=0.0.0.0`**: Permite que o n8n ou o proxy acessem o contêiner.
-   - **`DOCKER_NETWORK=openvoice_net`** (ou a rede onde o seu n8n já está rodando, ex: `n8n_network`).
-
-5. Inicie o serviço:
-   ```bash
-   docker compose up -d --build
-   ```
-
-### Integração com n8n no Portainer:
-Se o seu n8n e o OpenVoice estiverem na mesma máquina através do Portainer:
-- Conecte o contêiner do n8n à rede `openvoice_net` (ou adicione ambos à mesma rede no Docker).
-- No n8n, use a URL direta:
-  ```text
-  http://openvoice_br_engine:5050/v1/audio/speech
-  ```
-  *(Não precisa de domínio público nem expor portas na internet!)*
+O **OpenVoice BR Engine** é auto-hospedado, leve e 100% gratuito. Ele pode ser executado em uma VPS própria (Hetzner, OVH, DigitalOcean, etc.), em seu homelab com Docker ou publicado como contêiner no Portainer.
 
 ---
 
-## 2. Acesso Externo Seguro via Cloudflare Tunnel
+## 1. Deploy Direto no Portainer (Via Stack Oficial)
 
-Se você roda o servidor em casa ou não quer abrir portas no firewall da VPS:
+A maneira mais rápida e elegante de rodar em um servidor com **Portainer**:
 
-1. Instale o conector `cloudflared` na sua máquina/servidor.
-2. Crie um túnel no painel do **Cloudflare Zero Trust** direcionando para:
+1. Acesse seu painel do **Portainer**.
+2. Vá em **Stacks** → **Add stack**.
+3. Defina um nome (ex: `openvoice-br`).
+4. Selecione a aba **Web editor** e cole o conteúdo de [portainer-stack.yml](portainer-stack.yml).
+5. Se desejar, ajuste as variáveis de ambiente (como `TTS_ENGINE=auto` ou `TTS_ENGINE=gtts`).
+6. Clique no botão **Deploy the stack**.
+
+> 💡 O Portainer irá baixar automaticamente a imagem pré-construída do GitHub Packages (`ghcr.io/leaomoacir/multivozes_br_engine:latest`) e iniciará a API na porta `5050`.
+
+---
+
+## 2. Deploy via Docker Compose no Terminal
+
+Se preferir rodar direto pelo terminal via SSH:
+
+```bash
+# 1. Clone o repositório
+git clone https://github.com/leaomoacir/multivozes_br_engine.git /opt/openvoice_br_engine
+cd /opt/openvoice_br_engine
+
+# 2. Crie e configure o .env
+cp .env.example .env
+
+# 3. Inicie o serviço
+docker compose up -d
+```
+
+### Dicas para VPS Hetzner / Data Centers:
+- **`TTS_ENGINE=auto`**: Tenta o Edge-TTS neural. Se houver erro 403 (bloqueio de IP pela Microsoft), faz fallback automático e instantâneo para o Google TTS.
+- **`TTS_ENGINE=gtts`**: Se o seu IP de VPS estiver totalmente bloqueado para WebSockets, configure `TTS_ENGINE=gtts` para usar exclusivamente rotas HTTP normais do Google.
+- **`BIND_ADDRESS=0.0.0.0`**: Permite que o n8n ou o proxy acessem o contêiner.
+
+---
+
+## 3. Rodando em 1 Linha com Docker Run
+
+Para testar ou rodar rapidamente sem Compose:
+
+```bash
+docker run -d \
+  --name openvoice_br_engine \
+  --restart unless-stopped \
+  -p 5050:5050 \
+  -e TTS_ENGINE=auto \
+  -e REQUIRE_API_KEY=false \
+  ghcr.io/leaomoacir/multivozes_br_engine:latest
+```
+
+---
+
+## 4. Integração com n8n no Mesmo Servidor (Rede Docker)
+
+Se o n8n e o OpenVoice estiverem no mesmo servidor Docker/Portainer:
+1. Conecte ambos na mesma rede Docker bridge (ex: `openvoice_net` ou `n8n_network`).
+2. No n8n, use a URL interna direta:
    ```text
-   HTTP -> localhost:5050
+   http://openvoice_br_engine:5050/v1/audio/speech
    ```
-3. No `.env`, proteja com chave de API:
-   ```dotenv
-   API_KEY=sua-chave-ultra-segura-aqui
-   REQUIRE_API_KEY=True
-   ```
-4. Configure suas chamadas no n8n ou clientes externos usando o cabeçalho:
-   ```text
-   Authorization: Bearer sua-chave-ultra-segura-aqui
-   ```
+   *(Não precisa de domínio público nem expor portas na internet!)*
 
 ---
 
-## 3. Proxy Cloudflare Worker (Opcional)
+## 5. Publicação Automática de Imagens (GitHub Actions CI/CD)
 
-Na pasta `workers/` há um template de Cloudflare Worker para criar um proxy intermediário caso queira ocultar a URL real do servidor ou aplicar regras customizadas de cache e timeout. Consulte `workers/README.md` se desejar utilizá-lo.
+O repositório inclui um pipeline completo em [.github/workflows/docker-publish.yml](.github/workflows/docker-publish.yml):
+
+- **Gatilhos:** A cada `push` na branch `master`/`main` ou criação de tags (`v*`), o GitHub Actions:
+  1. Executa a suíte de testes unitários (`pytest test_app.py`) com FFmpeg.
+  2. Compila a imagem Docker multi-plataforma (`linux/amd64` e `linux/arm64`).
+  3. Publica a imagem no **GitHub Container Registry (GHCR)** em:
+     `ghcr.io/leaomoacir/multivozes_br_engine:latest`
+- **Zero Configuração de Secrets:** Usa a permissão nativa `GITHUB_TOKEN` do GitHub, sem precisar cadastrar senhas adicionais.
+- **Suporte Opcional a Docker Hub:** Se desejar publicar também no Docker Hub, basta cadastrar os secrets `DOCKERHUB_USERNAME` e `DOCKERHUB_TOKEN` nas configurações do repositório no GitHub.
+
+---
+
+## 6. Acesso Externo via Cloudflare Tunnel (Opcional)
+
+Se rodar o servidor em casa ou não quiser abrir portas públicas:
+
+1. Instale o `cloudflared` na máquina.
+2. Crie um túnel no **Cloudflare Zero Trust** apontando para `http://localhost:5050`.
+3. Defina `REQUIRE_API_KEY=true` e `API_KEY=sua-chave` no `.env`.

@@ -1,0 +1,90 @@
+version: '3.8'
+
+# ==============================================================================
+# OpenVoice BR Engine - Stack Oficial para Portainer / Docker Compose
+# ==============================================================================
+# Cole este arquivo no Portainer: Stacks -> Add stack -> Web editor
+# ==============================================================================
+
+services:
+  openvoice:
+    image: ghcr.io/leaomoacir/multivozes_br_engine:latest
+    container_name: openvoice_br_engine
+    restart: unless-stopped
+    
+    # Portas expostas (PortaHost:PortaContainer)
+    ports:
+      - "${PORT:-5050}:5050"
+    
+    environment:
+      # --- Motor de Voz (100% Gratuito) ---
+      # 'auto': Tenta Edge-TTS neural; se houver erro 403 (bloqueio VPS), faz fallback para gTTS
+      # 'gtts': Usa 100% Google Translate TTS via HTTP padrão (recomendado para Hetzner)
+      # 'edge': Usa exclusivamente Edge-TTS
+      - TTS_ENGINE=${TTS_ENGINE:-auto}
+      
+      # --- Configurações do Servidor ---
+      - PORT=5050
+      - HOST=0.0.0.0
+      
+      # --- Autenticação (Opcional) ---
+      # Deixe em branco ou defina uma chave secreta
+      - API_KEY=${API_KEY:-}
+      - REQUIRE_API_KEY=${REQUIRE_API_KEY:-false}
+      
+      # --- Padrões de Síntese ---
+      - DEFAULT_VOICE=${DEFAULT_VOICE:-pt-BR-ThalitaMultilingualNeural}
+      - DEFAULT_RESPONSE_FORMAT=${DEFAULT_RESPONSE_FORMAT:-mp3}
+      - DEFAULT_SPEED=${DEFAULT_SPEED:-1.0}
+      - DEFAULT_GTTS_LANG=${DEFAULT_GTTS_LANG:-pt}
+      - DEFAULT_GTTS_TLD=${DEFAULT_GTTS_TLD:-com.br}
+      - REMOVE_FILTER=${REMOVE_FILTER:-false}
+      
+      # --- Limites por Requisição ---
+      - MAX_INPUT_CHARS=10000
+      - MAX_REQUEST_BYTES=131072
+      - TTS_TIMEOUT_SECONDS=90
+      - MAX_CONCURRENT_TTS=4
+      
+      # --- Proxy de Saída (Opcional) ---
+      # - PROXY=http://usuario:senha@host:porta
+
+    # Sistema de arquivos seguro com tmpfs para processamento rápido de áudio
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    read_only: true
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,size=256m,mode=1777
+
+    # Limites de recursos recomendados para estabilidade em VPS
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+        reservations:
+          memory: 128M
+
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:5050/health', timeout=3)"]
+      interval: 30s
+      timeout: 5s
+      start_period: 15s
+      retries: 3
+
+    networks:
+      - openvoice_net
+      # Se quiser que o container participe da mesma rede do n8n automaticamente,
+      # descomente a linha abaixo e a definição da rede externa no final deste arquivo:
+      # - n8n_network
+
+networks:
+  openvoice_net:
+    name: openvoice_net
+    driver: bridge
+
+  # Exemplo de rede existente do n8n para comunicação interna direta:
+  # n8n_network:
+  #   external: true
+
