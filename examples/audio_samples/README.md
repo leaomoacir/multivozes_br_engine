@@ -47,3 +47,4 @@ curl -X POST http://localhost:5050/v1/audio/speech \
   -d '{"model":"tts-1","input":"Áudio inteligente com proteção anti-bloqueio.","voice":"alloy","engine":"auto"}' \
   --output meu_audio_inteligente.mp3
 ```
+

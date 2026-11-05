@@ -157,3 +157,4 @@ Plataformas de orquestração de LLMs e agentes como **Flowise** e **Dify** poss
 3. No campo **API Key**, informe a chave cadastrada no seu `.env` (ou `local` se desabilitada).
 4. Modelo: `tts-1`. Voz: `alloy`.
 5. O agente agora responde por voz sem consumir créditos da OpenAI!
+
