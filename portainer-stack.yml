@@ -1,64 +1,66 @@
 version: '3.8'
 
 # ==============================================================================
-# OpenVoice BR Engine - Stack Oficial para Portainer / Docker Compose
+# OpenVoice BR Engine - Stack Portainer / Docker Compose
+# Integrada à rede: network_public (n8n, Traefik, Evolution API, etc.)
 # ==============================================================================
-# Cole este arquivo no Portainer: Stacks -> Add stack -> Web editor
+# No Portainer: Stacks -> Add stack -> Nome: multivozes -> Cole o conteúdo abaixo
 # ==============================================================================
 
 services:
-  openvoice:
+  multivozes:
     image: ghcr.io/leaomoacir/multivozes_br_engine:latest
-    container_name: openvoice_br_engine
+    container_name: multivozes
     restart: unless-stopped
-    
-    # Portas expostas (PortaHost:PortaContainer)
+
+    # Exposição de porta (opcional se outros containers como n8n estiverem na mesma network_public)
     ports:
-      - "${PORT:-5050}:5050"
-    
+      - "5050:5050"
+
     environment:
-      # --- Motor de Voz (100% Gratuito) ---
-      # 'auto': Tenta Edge-TTS neural; se houver erro 403 (bloqueio VPS), faz fallback para gTTS
-      # 'gtts': Usa 100% Google Translate TTS via HTTP padrão (recomendado para Hetzner)
-      # 'edge': Usa exclusivamente Edge-TTS
-      - TTS_ENGINE=${TTS_ENGINE:-auto}
-      
-      # --- Configurações do Servidor ---
+      # --- Servidor & Autenticação ---
       - PORT=5050
       - HOST=0.0.0.0
-      
-      # --- Autenticação (Opcional) ---
-      # Deixe em branco ou defina uma chave secreta
+      # Deixe vazio ou defina REQUIRE_API_KEY=false para uso livre/interno.
+      # Se definir REQUIRE_API_KEY=true, informe sua API_KEY no Portainer:
       - API_KEY=${API_KEY:-}
       - REQUIRE_API_KEY=${REQUIRE_API_KEY:-false}
-      
-      # --- Padrões de Síntese ---
+
+      # --- Motor de Voz (100% Gratuito) ---
+      # 'auto': Tenta Edge-TTS neural; se a Microsoft bloquear (403 em VPS), faz fallback imediato para Google TTS
+      # 'gtts': Usa 100% Google Translate TTS via HTTP padrão (recomendado para VPS Hetzner)
+      # 'edge': Usa exclusivamente Edge-TTS neural
+      - TTS_ENGINE=${TTS_ENGINE:-auto}
+
+      # --- Voz e Parâmetros Padrão ---
       - DEFAULT_VOICE=${DEFAULT_VOICE:-pt-BR-ThalitaMultilingualNeural}
       - DEFAULT_RESPONSE_FORMAT=${DEFAULT_RESPONSE_FORMAT:-mp3}
       - DEFAULT_SPEED=${DEFAULT_SPEED:-1.0}
       - DEFAULT_GTTS_LANG=${DEFAULT_GTTS_LANG:-pt}
       - DEFAULT_GTTS_TLD=${DEFAULT_GTTS_TLD:-com.br}
       - REMOVE_FILTER=${REMOVE_FILTER:-false}
-      
-      # --- Limites por Requisição ---
+
+      # --- Limites e Concorrência ---
       - MAX_INPUT_CHARS=10000
       - MAX_REQUEST_BYTES=131072
       - TTS_TIMEOUT_SECONDS=90
       - MAX_CONCURRENT_TTS=4
-      
-      # --- Proxy de Saída (Opcional) ---
-      # - PROXY=http://usuario:senha@host:porta
 
-    # Sistema de arquivos seguro com tmpfs para processamento rápido de áudio
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
-    read_only: true
+    command:
+      - sh
+      - -c
+      - |
+        uvicorn main:app \
+          --host 0.0.0.0 \
+          --port 5050 \
+          --proxy-headers \
+          --forwarded-allow-ips="*"
+
+    # Armazenamento temporário de áudios em RAM (rápido e sem desgaste do disco da VPS)
     tmpfs:
       - /tmp:rw,noexec,nosuid,size=256m,mode=1777
 
-    # Limites de recursos recomendados para estabilidade em VPS
+    # Limite de memória para evitar que o container sobrecarregue a VPS
     deploy:
       resources:
         limits:
@@ -67,24 +69,16 @@ services:
           memory: 128M
 
     healthcheck:
-      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:5050/health', timeout=3)"]
+      test: ["CMD", "python", "-c", "import os,urllib.request; urllib.request.urlopen('http://127.0.0.1:'+os.getenv('PORT','5050')+'/health', timeout=3)"]
       interval: 30s
       timeout: 5s
       start_period: 15s
       retries: 3
 
     networks:
-      - openvoice_net
-      # Se quiser que o container participe da mesma rede do n8n automaticamente,
-      # descomente a linha abaixo e a definição da rede externa no final deste arquivo:
-      # - n8n_network
+      - network_public
 
 networks:
-  openvoice_net:
-    name: openvoice_net
-    driver: bridge
-
-  # Exemplo de rede existente do n8n para comunicação interna direta:
-  # n8n_network:
-  #   external: true
-
+  network_public:
+    external: true
+    name: network_public

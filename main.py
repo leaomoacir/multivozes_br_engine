@@ -231,4 +231,4 @@ if __name__ == '__main__':
     print(f'  Modo: {TTS_ENGINE_PADRAO.upper()} | Porta: {PORTA} | Host: {HOST}')
     print('  Créditos: samucatutoriais, travisvn & rany2           ')
     print('========================================================')
-    uvicorn.run(app, host=HOST, port=PORTA)
+    uvicorn.run(app, host=HOST, port=PORTA, proxy_headers=True, forwarded_allow_ips="*")
