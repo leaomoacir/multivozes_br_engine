@@ -1,6 +1,8 @@
-# Integração com n8n 🇧🇷
+# Integração com n8n 🇧🇷 🔴
 
-O **Multivozes BR Engine** é 100% gratuito e compatível com a API de áudio da OpenAI (`/v1/audio/speech`). Ele pode ser conectado ao n8n tanto pelo **Nó Oficial da OpenAI** quanto pelo **Nó HTTP Request**.
+> 💡 **Dica:** Para guias de outras plataformas como **Typebot, Chatwoot, Evolution API (WhatsApp) e Z-API**, consulte o arquivo **[INTEGRATIONS.md](INTEGRATIONS.md)**.
+
+O **OpenVoice BR Engine** é 100% gratuito e compatível com a API de áudio da OpenAI (`/v1/audio/speech`). Ele pode ser conectado ao n8n tanto pelo **Nó Oficial da OpenAI** quanto pelo **Nó HTTP Request**.
 
 ---
 

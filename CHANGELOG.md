@@ -7,6 +7,29 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/spec/v2.0.
 
 ---
 
+## [2.2.0] - 2026-11-04
+
+### 🚀 Adicionado (Added)
+* **Arquitetura Dual-Engine com Fallback Automático Anti-Bloqueio:** Integração do **Google Translate TTS (gTTS)** como motor de redundância e alternativo ao **Microsoft Edge-TTS**.
+* **Solução Definitiva para Erro 403 / WSServerHandshakeError em VPS (Hetzner, OVH, etc.):** Se o IP do servidor for bloqueado pela Microsoft para WebSockets, o motor aciona o Google TTS via HTTP padrão de forma transparente, entregando o áudio com `200 OK`.
+* **Novo Modo de Operação `TTS_ENGINE`:**
+  * `auto` (padrão): Tenta Edge-TTS neural primeiro; em caso de erro 403, faz fallback automático para gTTS.
+  * `gtts`: Utiliza 100% Google Translate TTS via HTTP padrão.
+  * `edge`: Utiliza exclusivamente Edge-TTS.
+* **Cabeçalhos HTTP de Diagnóstico:** Respostas agora incluem `X-TTS-Engine-Used` (`edge-tts` ou `gtts`) e `X-TTS-Fallback` (`true`/`false`).
+* **Stack Oficial para Portainer (`portainer-stack.yml`):** Compatível com redes externas (ex: `network_public`), memória restrita (512M) e `tmpfs` em RAM para rápida geração de áudio.
+* **Compatibilidade e Guias para Ecossistema de Bots:** Documentação dedicada para **n8n**, **Typebot**, **Chatwoot**, **Evolution API**, **Z-API** e **Flowise/Dify** em `INTEGRATIONS.md`.
+* **Guia para Iniciantes Descomplicado (`BEGINNERS_GUIDE.md`):** Passo a passo visual e prático para quem está começando.
+* **Pipeline de CI/CD Multi-Plataforma (.github/workflows/docker-publish.yml):** Compilação automática para `linux/amd64` e `linux/arm64` e publicação no GitHub Container Registry (`ghcr.io/leaomoacir/multivozes_br_engine`).
+* **Suíte de Testes Automatizados (`test_app.py`):** 7 testes cobrindo rotas `/health`, `/v1/models`, `/v1/audio/voices`, geração via Edge, geração via gTTS, ajuste de velocidade via FFmpeg e teste do mecanismo de fallback.
+
+### ♻️ Alterado (Changed)
+* **Rebranding para OpenVoice BR Engine:** Nova identidade visual, diagramas de arquitetura SVG e documentação bilíngue (PT/BR e EN).
+* **Créditos e Reconhecimento:** Inclusão de seção de agradecimentos e atribuição nos rodapés e documentação aos autores originais (Samuel de Sousa Santos / samucatutoriais, travisvn e rany2).
+* **Parâmetros de Proxy do Uvicorn:** `proxy_headers=True` e `forwarded_allow_ips="*"` adicionados por padrão para suporte perfeito a proxies reversos (Nginx, Traefik, Caddy).
+
+---
+
 ## [2.1.0] - 2026-10-25
 
 ### Corrigido

@@ -1,0 +1,166 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 460" width="100%" height="100%" style="background:#0b1120;border-radius:12px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;">
+  <defs>
+    <linearGradient id="bgGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0b1120" />
+      <stop offset="50%" stop-color="#0f172a" />
+      <stop offset="100%" stop-color="#1e1b4b" />
+    </linearGradient>
+    <linearGradient id="cardGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1e293b" />
+      <stop offset="100%" stop-color="#0f172a" />
+    </linearGradient>
+    <linearGradient id="accentGrad" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#38bdf8" />
+      <stop offset="50%" stop-color="#818cf8" />
+      <stop offset="100%" stop-color="#c084fc" />
+    </linearGradient>
+    <linearGradient id="edgeGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0284c7" />
+      <stop offset="100%" stop-color="#0369a1" />
+    </linearGradient>
+    <linearGradient id="googleGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#ea4335" />
+      <stop offset="50%" stop-color="#fbbc05" />
+      <stop offset="100%" stop-color="#34a853" />
+    </linearGradient>
+    <filter id="shadow" x="-5%" y="-5%" width="110%" height="115%">
+      <feDropShadow dx="0" dy="8" stdDeviation="6" flood-color="#000" flood-opacity="0.45" />
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="960" height="460" rx="12" fill="url(#bgGrad)" />
+
+  <!-- Header -->
+  <g transform="translate(40, 36)">
+    <rect x="0" y="0" width="168" height="26" rx="13" fill="#1e293b" stroke="#334155" />
+    <circle cx="14" cy="13" r="5" fill="#22c55e" />
+    <text x="26" y="17" fill="#94a3b8" font-size="11" font-weight="600" letter-spacing="0.5">V2.2.0 DUAL-ENGINE</text>
+
+    <text x="0" y="52" fill="#f8fafc" font-size="24" font-weight="800" letter-spacing="-0.5">OpenVoice BR Engine — Arquitetura de Áudio</text>
+    <text x="0" y="74" fill="#94a3b8" font-size="13">Síntese de voz 100% gratuita compatível com OpenAI e fallback automático anti-bloqueio de IP</text>
+  </g>
+
+  <!-- Column 1: Integrations / Clients -->
+  <g transform="translate(40, 130)" filter="url(#shadow)">
+    <rect width="210" height="290" rx="10" fill="url(#cardGrad)" stroke="#334155" stroke-width="1.2" />
+    <text x="20" y="32" fill="#38bdf8" font-size="12" font-weight="700" letter-spacing="1">CLIENTES &amp; ECOSSISTEMA</text>
+    
+    <!-- Item: n8n -->
+    <g transform="translate(18, 50)">
+      <rect width="174" height="40" rx="6" fill="#1e293b" stroke="#475569" />
+      <text x="14" y="24" fill="#f1f5f9" font-size="13" font-weight="600">🔴 n8n Automation</text>
+      <text x="14" y="34" fill="#64748b" font-size="9">Nó OpenAI / HTTP Request</text>
+    </g>
+
+    <!-- Item: Typebot -->
+    <g transform="translate(18, 98)">
+      <rect width="174" height="40" rx="6" fill="#1e293b" stroke="#475569" />
+      <text x="14" y="24" fill="#f1f5f9" font-size="13" font-weight="600">🤖 Typebot</text>
+      <text x="14" y="34" fill="#64748b" font-size="9">Webhook Audio Block</text>
+    </g>
+
+    <!-- Item: Evolution API -->
+    <g transform="translate(18, 146)">
+      <rect width="174" height="40" rx="6" fill="#1e293b" stroke="#475569" />
+      <text x="14" y="24" fill="#f1f5f9" font-size="13" font-weight="600">📱 Evolution API / Z-API</text>
+      <text x="14" y="34" fill="#64748b" font-size="9">WhatsApp Voice Message (PTT)</text>
+    </g>
+
+    <!-- Item: Chatwoot -->
+    <g transform="translate(18, 194)">
+      <rect width="174" height="40" rx="6" fill="#1e293b" stroke="#475569" />
+      <text x="14" y="24" fill="#f1f5f9" font-size="13" font-weight="600">💬 Chatwoot</text>
+      <text x="14" y="34" fill="#64748b" font-size="9">Voice Note Bot Responses</text>
+    </g>
+
+    <!-- Item: cURL / SDKs -->
+    <g transform="translate(18, 242)">
+      <rect width="174" height="34" rx="6" fill="#1e293b" stroke="#475569" />
+      <text x="14" y="22" fill="#94a3b8" font-size="11" font-weight="500">💻 Python / cURL / Apps</text>
+    </g>
+  </g>
+
+  <!-- Arrow 1 -> 2 -->
+  <g transform="translate(250, 270)">
+    <line x1="5" y1="0" x2="65" y2="0" stroke="#38bdf8" stroke-width="2.5" stroke-dasharray="4,3" />
+    <polygon points="65,-5 75,0 65,5" fill="#38bdf8" />
+    <rect x="12" y="-22" width="50" height="16" rx="3" fill="#0f172a" />
+    <text x="17" y="-10" fill="#38bdf8" font-size="9" font-weight="700">POST /v1</text>
+  </g>
+
+  <!-- Column 2: OpenVoice Engine Core -->
+  <g transform="translate(330, 130)" filter="url(#shadow)">
+    <rect width="280" height="290" rx="10" fill="url(#cardGrad)" stroke="#6366f1" stroke-width="1.8" />
+    <text x="20" y="32" fill="#818cf8" font-size="12" font-weight="700" letter-spacing="1">OPENVOICE BR ENGINE (PORT 5050)</text>
+
+    <!-- FastAPI Adapter -->
+    <g transform="translate(16, 50)">
+      <rect width="248" height="48" rx="6" fill="#1e293b" stroke="#4f46e5" />
+      <text x="14" y="22" fill="#f8fafc" font-size="13" font-weight="700">FastAPI + OpenAI Adapter</text>
+      <text x="14" y="38" fill="#94a3b8" font-size="10">Compatível com /v1/audio/speech • Auth Bearer</text>
+    </g>
+
+    <!-- Intelligent Router -->
+    <g transform="translate(16, 110)">
+      <rect width="248" height="64" rx="6" fill="#312e81" stroke="#818cf8" stroke-width="1.2" />
+      <text x="14" y="22" fill="#e0e7ff" font-size="13" font-weight="700">⚡ Roteador Inteligente de Síntese</text>
+      <text x="14" y="38" fill="#c7d2fe" font-size="10">• Modo "auto": Tenta Edge Neural primeiro</text>
+      <text x="14" y="52" fill="#a5f3fc" font-size="10">• Erro 403 / Handshake? Chaveia para gTTS</text>
+    </g>
+
+    <!-- FFmpeg Engine -->
+    <g transform="translate(16, 186)">
+      <rect width="248" height="48" rx="6" fill="#1e293b" stroke="#475569" />
+      <text x="14" y="22" fill="#f8fafc" font-size="13" font-weight="700">FFmpeg Audio Pipeline</text>
+      <text x="14" y="38" fill="#94a3b8" font-size="10">Filtro atempo (0.25x a 2.0x) • MP3, WAV, Opus, AAC</text>
+    </g>
+
+    <!-- Diagnostics -->
+    <g transform="translate(16, 246)">
+      <rect width="248" height="30" rx="6" fill="#0f172a" stroke="#334155" />
+      <text x="12" y="19" fill="#22c55e" font-size="10" font-weight="600">Headers: X-TTS-Engine-Used &amp; X-TTS-Fallback</text>
+    </g>
+  </g>
+
+  <!-- Split Arrows 2 -> 3 -->
+  <!-- Top Arrow to Edge -->
+  <g transform="translate(615, 185)">
+    <path d="M 0 30 Q 30 30 35 0 L 60 0" fill="none" stroke="#0284c7" stroke-width="2.5" />
+    <polygon points="60,-5 70,0 60,5" fill="#0284c7" />
+    <rect x="15" y="-14" width="40" height="14" rx="3" fill="#0f172a" />
+    <text x="18" y="-4" fill="#38bdf8" font-size="8" font-weight="700">PRIMÁRIO</text>
+  </g>
+
+  <!-- Bottom Arrow to Google (Fallback) -->
+  <g transform="translate(615, 275)">
+    <path d="M 0 -25 Q 30 -25 35 30 L 60 30" fill="none" stroke="#22c55e" stroke-width="2.5" stroke-dasharray="4,3" />
+    <polygon points="60,25 70,30 60,35" fill="#22c55e" />
+    <rect x="8" y="35" width="56" height="14" rx="3" fill="#0f172a" />
+    <text x="11" y="45" fill="#22c55e" font-size="8" font-weight="700">FALLBACK</text>
+  </g>
+
+  <!-- Column 3: Backend Engines -->
+  <!-- Engine 1: Edge-TTS -->
+  <g transform="translate(690, 140)" filter="url(#shadow)">
+    <rect width="230" height="110" rx="10" fill="url(#cardGrad)" stroke="#0284c7" stroke-width="1.5" />
+    <rect x="16" y="16" width="60" height="18" rx="4" fill="#0369a1" />
+    <text x="22" y="29" fill="#e0f2fe" font-size="9" font-weight="700">MICROSOFT</text>
+    <text x="16" y="54" fill="#f8fafc" font-size="15" font-weight="700">Edge-TTS Neural</text>
+    <text x="16" y="72" fill="#94a3b8" font-size="11">Vozes ultrarrealistas (Thalita, Antonio)</text>
+    <text x="16" y="88" fill="#94a3b8" font-size="10">Mais de 300 vozes neurais gratuitas</text>
+    <circle cx="210" cy="25" r="5" fill="#38bdf8" />
+  </g>
+
+  <!-- Engine 2: Google Translate TTS -->
+  <g transform="translate(690, 275)" filter="url(#shadow)">
+    <rect width="230" height="120" rx="10" fill="url(#cardGrad)" stroke="#22c55e" stroke-width="1.5" />
+    <rect x="16" y="16" width="50" height="18" rx="4" fill="#15803d" />
+    <text x="23" y="29" fill="#dcfce7" font-size="9" font-weight="700">GOOGLE</text>
+    <text x="16" y="54" fill="#f8fafc" font-size="15" font-weight="700">Google TTS (gTTS)</text>
+    <text x="16" y="72" fill="#86efac" font-size="11" font-weight="600">✓ 100% Imune a Bloqueios de VPS</text>
+    <text x="16" y="88" fill="#94a3b8" font-size="10">Requisições HTTP padrão (sem WebSocket)</text>
+    <text x="16" y="104" fill="#94a3b8" font-size="10">Garante estabilidade na Hetzner / OVH</text>
+    <circle cx="210" cy="25" r="5" fill="#22c55e" />
+  </g>
+</svg>
